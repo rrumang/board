@@ -4,6 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<properties resource="kr/or/ddit/config/mybatis/db.properties"/>
+	
 	<typeAliases>
 		<typeAlias alias="userVo" type="kr.or.ddit.user.model.UserVo" />
 		<typeAlias alias="pageVo" type="kr.or.ddit.paging.model.PageVo" />
