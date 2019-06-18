@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="addfile">
+	<!--해당 게시글 전체 파일 리스트 조회 -->
+	<select id="fileList" parameterType="string" resultType="addfileVo">
+		select /*+ INDEX(addfile) */ *
+		from addfile
+		where articleid = #{articleId}
+	</select>
+	
+	<!--해당 게시글 전체 파일 리스트 조회 -->
+	<select id="getfile" parameterType="string" resultType="addfileVo">
+		select /*+ INDEX(addfile) */ *
+		from addfile
+		where fileid = #{fileId}
+	</select>
+	
+	<!--파일 등록  -->
+	<insert id="insertFile" parameterType="addfileVo">
+		insert into addfile
+		values(#{fileId}, #{articleId}, #{path, jdbcType=VARCHAR}, #{fileName, jdbcType=VARCHAR})
+	</insert>
+	
+	<!--파일 삭제  -->
+	<delete id="deleteFile" parameterType="String">
+		delete addfile
+		where fileid = #{fileId} 
+	</delete>
+	
+	<!--파일아이디 가져오기  -->
+	<select id="getFileId" resultType="string">
+		select fileid.nextval from dual
+	</select>
+	
+</mapper>

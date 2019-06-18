@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="article">
+	<!--전체 게시글 조회 -->
+	<select id="articleList" resultType="articleVo" parameterType="string">
+		select /*+ INDEX(article) */ *
+		from article
+		where boardid = #{boardId}
+		order by articleid
+	</select>
+	
+	<!--특정 게시글 조회 -->
+	<select id="getArticle" resultType="articleVo" parameterType="string">
+		select /*+ INDEX(article) */ *
+		from article
+		where articleid = #{articleId}
+	</select>
+	
+	<!--사용자 페이지 리스트 조회 -->
+	<!--pageVo int page, int pageSize 아직 안만들었지만 있다고 가정 -->
+	<select id="articlePagingList" parameterType="map" resultType="articleVo">
+		<![CDATA[
+		select c.*
+		 from
+			(select b.*, rownum rn
+			 from 
+				(select a.articleid, a.title, a.userid, a.add_dt, level lv
+				 from article a
+				 where boardid = #{boardId} 
+				 start with parentid is null
+				 connect by prior articleid = parentid
+				 order siblings by article_group desc, articleid) b)c
+		 WHERE RN >= (#{page} -1 ) * #{pageSize} + 1
+		 AND RN <= #{page} * #{pageSize}
+		]]>
+	</select>
+	
+	<!--게시글 전체수 조회  -->
+	<select id="articleCnt" resultType="int">
+		select /*+ INDEX_FFS(article PK_ARTICLE) */ count(*)
+		from article
+		where boardid = #{boardId}
+	</select>
+	
+	<!--게시글 등록  -->
+	<insert id="insertArticle" parameterType="articleVo">
+		insert into article
+		values(
+		#{articleId}
+	
+		, #{parentId, jdbcType=VARCHAR}
+		, #{boardId}
+		, #{userId}
+		, #{title}
+		, #{content}
+		, sysdate
+		, 'y'
+		, #{article_group, jdbcType=VARCHAR})
+	</insert>
+	
+	<!--게시글 삭제  -->
+	<update id="deleteArticle" parameterType="string">
+		update article
+		set article_use = 'n', title='삭제된 글입니다'
+		where articleid = #{articleId} 
+	</update>
+	
+	<!--게시글 수정  -->
+	<update id="updateArticle" parameterType="articleVo">
+		update article
+		set 
+		title=#{title}
+		, content=#{content}
+		where articleid = #{articleId}
+	</update>
+	
+	<!--articleId 가져오는 메서드-->
+	<select id="getArticleId" resultType="string">
+		select articleid.nextval from dual
+	</select>
+</mapper>

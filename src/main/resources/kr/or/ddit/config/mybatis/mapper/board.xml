@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+	<!--전체 게시판 리스트 조회 -->
+	<select id="boardList" resultType="boardVo">
+		select /*+ INDEX(board) */ *
+		from board order by boardid
+	</select>
+	
+	<!--특정 게시판 조회 -->
+	<select id="getBoard" resultType="boardVo" parameterType="string">
+		select /*+ INDEX(board) */ *
+		from board
+		where boardid = #{boardId}
+	</select>
+	
+	<!--게시판 생성  -->
+	<insert id="insertBoard" parameterType="boardVo">
+		insert into board
+		values(boardid.nextval, #{userId}, #{name}, #{use_yn}, sysdate)
+	</insert>
+	
+	<!--게시판 미사용  -->
+	<update id="deleteBoard" parameterType="boardVo">
+		update board
+		set use_yn = 'n', name=#{name}
+		where boardid = #{boardId} 
+	</update>
+	
+	<!--게시판 사용  -->
+	<update id="updateBoard" parameterType="boardVo">
+		update board
+		set use_yn = 'y', name=#{name}
+		where boardid = #{boardId} 
+	</update>
+	
+
+</mapper>
